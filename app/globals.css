@@ -1,26 +1,164 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* Paleta oficial — Brandbook V1.0 §05 */
+  --color-brand-blue: #0011ff; /* Azul Builder — primario */
+  --color-brand-blue-soft: #4d5dff; /* tinte UI para texto pequeño sobre oscuro (legibilidad) */
+  --color-brand-navy: #00076e; /* Navy Profundo — profundidad */
+  --color-ink: #05060a; /* Negro — base */
+  --color-surface: #0a0c16; /* superficie oscura ligeramente elevada */
+  --color-surface-2: #10131f;
+  --color-muted-fg: #9a9aab;
+  --color-line: rgba(255, 255, 255, 0.12);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Tipografía oficial — Brandbook §06: Poppins + Space Mono */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), ui-monospace, monospace;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --radius-card: 0.875rem;
+
+  --animate-fade-up: fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-marquee: marquee 32s linear infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+:root {
+  --background: #05060a;
+  --foreground: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: #0011ff;
+  color: #ffffff;
+}
+
+/* ————————————————————————————————
+   Gradiente mesh — Brandbook §07.
+   Azul eléctrico → navy → negro.
+   MESH 02 · Diagonal: azul irradiando en
+   diagonal, esquinas opuestas en negro. + grano.
+   ———————————————————————————————— */
+.brand-bg {
+  position: relative;
+  isolation: isolate;
+  background-color: #05060a;
+  background-image: radial-gradient(
+      ellipse 80% 60% at 15% 78%,
+      #0011ff 0%,
+      rgba(0, 17, 255, 0.35) 40%,
+      transparent 70%
+    ),
+    radial-gradient(ellipse 70% 50% at 92% 12%, #0011ff 0%, transparent 62%),
+    radial-gradient(
+      ellipse 100% 80% at 50% 50%,
+      rgba(0, 7, 110, 0.6) 0%,
+      transparent 75%
+    );
+}
+
+.brand-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* MESH 01 · Foco superior — para banners/secciones secundarias */
+.brand-bg-top {
+  position: relative;
+  isolation: isolate;
+  background-color: #05060a;
+  background-image: radial-gradient(
+      ellipse 90% 70% at 50% -10%,
+      #0011ff 0%,
+      rgba(0, 7, 110, 0.55) 45%,
+      transparent 75%
+    );
+}
+
+/* ————————————————————————————————
+   Reveal on scroll — CSS scroll-driven,
+   con fallback visible si no hay soporte.
+   ———————————————————————————————— */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: fade-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger del hero al cargar */
+.hero-stagger > * {
+  animation: var(--animate-fade-up);
+}
+.hero-stagger > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.hero-stagger > *:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.hero-stagger > *:nth-child(3) {
+  animation-delay: 0.32s;
+}
+.hero-stagger > *:nth-child(4) {
+  animation-delay: 0.46s;
+}
+.hero-stagger > *:nth-child(5) {
+  animation-delay: 0.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-stagger > *,
+  .reveal {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
 }
